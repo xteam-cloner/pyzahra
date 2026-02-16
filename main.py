@@ -7,6 +7,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # Masukkan Token Anda di sini
 TOKEN = "8392450438:AAF8GuDJjAkW7c9ePLLkHXFDKshP4RfndSI"
@@ -14,11 +15,24 @@ TOKEN = "8392450438:AAF8GuDJjAkW7c9ePLLkHXFDKshP4RfndSI"
 dp = Dispatcher()
 
 # Handler untuk perintah /start
+
 @dp.message(CommandStart())
 async def command_start_handler(message: Message) -> None:
-    await message.answer(f"Halo, {html.bold(message.from_user.full_name)}!")
+    # Membuat tombol
+    kb = [
+        [
+            InlineKeyboardButton(text="Cek Profil", callback_data="view_profile"),
+            InlineKeyboardButton(text="Bantuan", callback_data="help_info")
+        ],
+        [InlineKeyboardButton(text="Kunjungi Website", url="https://google.com")]
+    ]
+    keyboard = InlineKeyboardMarkup(inline_keyboard=kb)
 
-# Handler untuk membalas pesan teks (Echo)
+    await message.answer(
+        f"Halo, {html.bold(message.from_user.full_name)}!\nApa yang ingin kamu lakukan hari ini?",
+        reply_markup=keyboard
+    )
+
 @dp.message()
 async def echo_handler(message: Message) -> None:
     try:
