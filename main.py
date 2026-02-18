@@ -8,30 +8,46 @@ from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram import types
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 # Masukkan Token Anda di sini
 TOKEN = "8392450438:AAF8GuDJjAkW7c9ePLLkHXFDKshP4RfndSI"
 
 dp = Dispatcher()
 
-# Handler untuk perintah /start
+
 
 @dp.message(CommandStart())
-async def command_start_handler(message: Message) -> None:
-    # Membuat tombol
-    kb = [
-        [
-            InlineKeyboardButton(text="Cek Profil", callback_data="view_profile"),
-            InlineKeyboardButton(text="Bantuan", callback_data="help_info")
-        ],
-        [InlineKeyboardButton(text="Kunjungi Website", url="https://google.com")]
-    ]
-    keyboard = InlineKeyboardMarkup(inline_keyboard=kb)
+async def command_start_handler(message: types.Message) -> None:
+    # Menggunakan ReplyKeyboardBuilder untuk fleksibilitas
+    builder = ReplyKeyboardBuilder()
+    
+    # Menambahkan tombol dengan gaya warna (style) dan custom emoji
+    builder.row(
+        types.KeyboardButton(
+            text="Putar Musik", 
+            style="primary",  # Warna Biru
+            icon_custom_emoji_id="5432109876543210" # Ganti dengan ID emoji aslimu
+        ),
+        types.KeyboardButton(
+            text="Hentikan", 
+            style="danger"    # Warna Merah
+        )
+    )
+    
+    builder.row(
+        types.KeyboardButton(
+            text="Bantuan & FAQ", 
+            style="success"   # Warna Hijau
+        )
+    )
 
     await message.answer(
-        f"Halo, {html.bold(message.from_user.full_name)}!\nApa yang ingin kamu lakukan hari ini?",
-        reply_markup=keyboard
+        f"Halo {message.from_user.first_name}!\nSilakan pilih menu berwarna di bawah:",
+        reply_markup=builder.as_markup(resize_keyboard=True)
     )
+    
 
 @dp.message()
 async def echo_handler(message: Message) -> None:
