@@ -19,48 +19,35 @@ dp = Dispatcher()
 
 @dp.message(CommandStart())
 async def command_start_handler(message: types.Message) -> None:
-    builder = InlineKeyboardBuilder()
-    
-    # Baris 1: Tombol lebar dengan Custom Emoji
-    builder.row(
-        types.InlineKeyboardButton(
-            text="✨ ADD ME TO YOUR GROUP ✨",
-            url="https://t.me/xtbot?startgroup=true"
-        )
-    )
-    
-    # Baris 2: Tombol Berwarna (Menggunakan Hex Color)
-    builder.row(
-        types.InlineKeyboardButton(
-            text="⚙️ Settings", 
-            callback_data="settings",
-            background_color=0x3399FF  # Warna Biru (Primary)
-        ),
-        types.InlineKeyboardButton(
-            text="📦 Module", 
-            callback_data="module",
-            background_color=0x7F7F7F  # Warna Abu-abu
-        )
-    )
-    
-    # Baris 3: Tombol Putar & Hentikan dengan warna kontras
-    builder.row(
-        types.InlineKeyboardButton(
-            text="▶️ Putar Musik", 
-            callback_data="play_music",
-            background_color=0x00CC66  # Warna Hijau (Success)
-        ),
-        types.InlineKeyboardButton(
-            text="⏹ Hentikan", 
-            callback_data="stop_music",
-            background_color=0xFF3333  # Warna Merah (Danger)
-        )
+    # Membuat keyboard secara manual tanpa Builder
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="▶️ Putar Musik", 
+                    callback_data="play",
+                    background_color=0x00CC66  # Hijau (API 9.4)
+                ),
+                InlineKeyboardButton(
+                    text="⏹ Hentikan", 
+                    callback_data="stop",
+                    background_color=0xFF3333  # Merah (API 9.4)
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="✨ ADD ME TO YOUR GROUP ✨", 
+                    url=f"https://t.me/{(await bot.get_me()).username}?startgroup=true"
+                )
+            ]
+        ]
     )
 
     await message.answer(
-        f"Hey {html.bold(message.from_user.full_name)}. Please browse through the options 👇",
-        reply_markup=builder.as_markup()
+        f"Halo {html.bold(message.from_user.full_name)}!\nSilakan pilih menu musik di bawah:",
+        reply_markup=keyboard
     )
+    
     
 
 # Handler agar tombol "Putar Musik" berfungsi saat ditekan di grup
