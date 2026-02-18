@@ -37,7 +37,7 @@ async def command_start_handler(message: types.Message) -> None:
             [
                 InlineKeyboardButton(
                     text="✨ ADD ME TO YOUR GROUP ✨", 
-                    url=f"https://t.me/{(await bot.get_me()).username}?startgroup=true"
+                    url=f"https://t.me/{(await Bot.get_me()).username}?startgroup=true"
                 )
             ]
         ]
