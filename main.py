@@ -19,32 +19,49 @@ dp = Dispatcher()
 
 @dp.message(CommandStart())
 async def command_start_handler(message: types.Message) -> None:
-    # Menggunakan builder agar tata letak tombol rapi
-    builder = ReplyKeyboardBuilder()
+    builder = InlineKeyboardBuilder()
     
-    # Tombol pertama (Baris 1): Putar Musik (Biru) & Hentikan (Merah)
+    # Baris 1: Tombol lebar dengan Custom Emoji
     builder.row(
-        types.KeyboardButton(text="Putar Musik", style="primary"),
-        types.KeyboardButton(text="Hentikan", style="danger")
+        types.InlineKeyboardButton(
+            text="✨ ADD ME TO YOUR GROUP ✨",
+            url="https://t.me/xtbot?startgroup=true"
+        )
     )
     
-    # Tombol kedua (Baris 2): Bantuan (Hijau)
+    # Baris 2: Tombol Berwarna (Menggunakan Hex Color)
     builder.row(
-        types.KeyboardButton(text="Bantuan & FAQ", style="success")
+        types.InlineKeyboardButton(
+            text="⚙️ Settings", 
+            callback_data="settings",
+            background_color=0x3399FF  # Warna Biru (Primary)
+        ),
+        types.InlineKeyboardButton(
+            text="📦 Module", 
+            callback_data="module",
+            background_color=0x7F7F7F  # Warna Abu-abu
+        )
     )
     
-    # Pesan respon
-    text = f"Halo {html.bold(message.from_user.full_name)}!\n"
-    if message.chat.type in ["group", "supergroup"]:
-        text += f"Selamat datang di grup {html.bold(message.chat.title)}. Menu musik sudah siap!"
-    else:
-        text += "Silakan pilih menu berwarna di bawah untuk kontrol musik:"
+    # Baris 3: Tombol Putar & Hentikan dengan warna kontras
+    builder.row(
+        types.InlineKeyboardButton(
+            text="▶️ Putar Musik", 
+            callback_data="play_music",
+            background_color=0x00CC66  # Warna Hijau (Success)
+        ),
+        types.InlineKeyboardButton(
+            text="⏹ Hentikan", 
+            callback_data="stop_music",
+            background_color=0xFF3333  # Warna Merah (Danger)
+        )
+    )
 
-    # Kirim pesan dengan keyboard yang warnanya dipertahankan
     await message.answer(
-        text,
-        reply_markup=builder.as_markup(resize_keyboard=True)
+        f"Hey {html.bold(message.from_user.full_name)}. Please browse through the options 👇",
+        reply_markup=builder.as_markup()
     )
+    
 
 # Handler agar tombol "Putar Musik" berfungsi saat ditekan di grup
 @dp.message(F.text == "Putar Musik")
