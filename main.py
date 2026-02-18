@@ -2,7 +2,7 @@ import asyncio
 import logging
 import sys
 
-from aiogram import Bot, Dispatcher, html
+from aiogram import Bot, Dispatcher, html, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
@@ -17,36 +17,40 @@ TOKEN = "8392450438:AAF8GuDJjAkW7c9ePLLkHXFDKshP4RfndSI"
 dp = Dispatcher()
 
 
-
 @dp.message(CommandStart())
 async def command_start_handler(message: types.Message) -> None:
-    # Menggunakan ReplyKeyboardBuilder untuk fleksibilitas
+    # Menggunakan builder agar tata letak tombol rapi
     builder = ReplyKeyboardBuilder()
     
-    # Menambahkan tombol dengan gaya warna (style) dan custom emoji
+    # Tombol pertama (Baris 1): Putar Musik (Biru) & Hentikan (Merah)
     builder.row(
-        types.KeyboardButton(
-            text="Putar Musik", 
-            style="primary",  # Warna Biru
-            icon_custom_emoji_id="5432109876543210" # Ganti dengan ID emoji aslimu
-        ),
-        types.KeyboardButton(
-            text="Hentikan", 
-            style="danger"    # Warna Merah
-        )
+        types.KeyboardButton(text="Putar Musik", style="primary"),
+        types.KeyboardButton(text="Hentikan", style="danger")
     )
     
+    # Tombol kedua (Baris 2): Bantuan (Hijau)
     builder.row(
-        types.KeyboardButton(
-            text="Bantuan & FAQ", 
-            style="success"   # Warna Hijau
-        )
+        types.KeyboardButton(text="Bantuan & FAQ", style="success")
     )
+    
+    # Pesan respon
+    text = f"Halo {html.bold(message.from_user.full_name)}!\n"
+    if message.chat.type in ["group", "supergroup"]:
+        text += f"Selamat datang di grup {html.bold(message.chat.title)}. Menu musik sudah siap!"
+    else:
+        text += "Silakan pilih menu berwarna di bawah untuk kontrol musik:"
 
+    # Kirim pesan dengan keyboard yang warnanya dipertahankan
     await message.answer(
-        f"Halo {message.from_user.first_name}!\nSilakan pilih menu berwarna di bawah:",
+        text,
         reply_markup=builder.as_markup(resize_keyboard=True)
     )
+
+# Handler agar tombol "Putar Musik" berfungsi saat ditekan di grup
+@dp.message(F.text == "Putar Musik")
+async def music_guide(message: types.Message):
+    await message.reply("Ketik `/play [judul lagu]` untuk memutar musik di Voice Chat!")
+    
     
 
 @dp.message()
