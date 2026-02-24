@@ -12,9 +12,15 @@ app = Client(
     plugins=dict(root="plugins")
 )
 
+async def send_log(text):
+    try:
+        await app.send_message(Config.LOG_ID, text)
+    except Exception as e:
+        print(f"Gagal kirim log: {e}")
+
 async def start_ubot(data):
     try:
-        zahra = Client(
+        zahra_ub = Client(
             name=f"zahra_{data['user_id']}",
             api_id=data["api_id"],
             api_hash=data["api_hash"],
@@ -22,23 +28,25 @@ async def start_ubot(data):
             plugins=dict(root="plugins"),
             in_memory=True
         )
-        await zahra.start()
+        await zahra_ub.start()
         
-        call = PyTgCalls(zahra)
+        call = PyTgCalls(zahra_ub)
         await call.start()
-        zahra.call = call
+        zahra_ub.call = call
         
-        print(f"✅ Aktif: {data['user_id']}")
-        return zahra
+        await send_log(f"✅ **Userbot Aktif**\nID: `{data['user_id']}`")
+        return zahra_ub
     except Exception as e:
-        print(f"❌ Gagal {data['user_id']}: {e}")
+        await send_log(f"❌ **Gagal Login**\nID: `{data['user_id']}`\nError: `{e}`")
         return None
 
 async def runner():
     await app.start()
     async for acc in collection.find({}):
         await start_ubot(acc)
-    print("🚀 ZAHRA CORE ONLINE")
+    
+    await send_log("🚀 **Zahra Core Online**\nSemua sistem telah dimuat.")
+    print("🚀 ZAHRA CORE IS RUNNING")
     await idle()
 
 if __name__ == "__main__":
