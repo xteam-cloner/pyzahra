@@ -124,3 +124,21 @@ async def cancel_cb(client, cb):
         del user_temp[uid]
     await cb.message.edit("❌ Dibatalkan.")
   
+
+@Client.on_callback_query(filters.regex("^del_ubot$"))
+async def hapus_akun_callback(client, callback_query: CallbackQuery):
+    user_id = callback_query.from_user.id
+    
+    check = await collection.find_one({"user_id": user_id})
+    
+    if not check:
+        return await callback_query.answer("❌ Akun Anda tidak terdaftar.", show_alert=True)
+    
+    await collection.delete_one({"user_id": user_id})
+    
+    await callback_query.edit_message_text(
+        "✅ **Berhasil Dihapus!**\n\nSesi Anda telah dihapus dari database. Userbot tidak akan aktif lagi setelah bot di-restart."
+    )
+    
+    await callback_query.answer("Akun berhasil dihapus", show_alert=False)
+    
