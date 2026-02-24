@@ -1,5 +1,5 @@
 import asyncio
-from kurigram import Client, idle
+from pyrogram import Client, idle
 from pytgcalls import PyTgCalls
 from .config import Config
 from .database import collection
