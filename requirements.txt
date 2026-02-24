@@ -1,0 +1,7 @@
+kurigram
+motor
+dnspython
+python-dotenv
+tgcrypto
+py-tgcalls
+ffmpeg
