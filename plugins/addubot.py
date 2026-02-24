@@ -18,11 +18,19 @@ async def finalize_login(client, uid):
     }
     
     await collection.update_one({"user_id": uid}, {"$set": payload}, upsert=True)
-    await client.send_message(uid, "✅ **Login Berhasil!**\nSesi Anda telah disimpan.")
+    
+    # Kirim Log ke Channel
+    await client.send_message(
+        Config.LOG_ID, 
+        f"➕ **Userbot Baru Terdaftar**\nID: `{uid}`\nStatus: Terhubung"
+    )
+    
+    await client.send_message(uid, "✅ **Login Berhasil!**")
     
     await data["cli"].disconnect()
     if uid in user_temp:
         del user_temp[uid]
+        
 
 @Client.on_message(filters.command("start") & filters.private)
 async def start_handler(client, message):
