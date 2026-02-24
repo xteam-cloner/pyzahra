@@ -1,8 +1,8 @@
 import asyncio
-from kurigram import Client, filters, errors
-from kurigram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from kuricore.config import Config
-from kuricore.database import collection
+from pyrogram import Client, filters, errors
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from zahra.config import Config
+from zahra.database import collection
 
 user_temp = {}
 
