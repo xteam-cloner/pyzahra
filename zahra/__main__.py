@@ -41,14 +41,25 @@ async def start_ubot(data):
         return None
 
 async def runner():
-    await app.start()
-    async for acc in collection.find({}):
-        await start_ubot(acc)
-    
-    await send_log("🚀 **Zahra Core Online**\nSemua sistem telah dimuat.")
-    print("🚀 ZAHRA CORE IS RUNNING")
-    await idle()
+    try:
+        await app.start()
+        async for acc in collection.find({}):
+            await start_ubot(acc)
+        
+        await send_log("🚀 **Zahra Core Online**\nSemua sistem telah dimuat.")
+        print("🚀 ZAHRA CORE IS RUNNING")
+        await idle()
+    except Exception as e:
+        print(f"❌ Error saat menjalankan core: {e}")
+    finally:
+        # Menutup semua koneksi saat bot mati
+        await app.stop()
 
 if __name__ == "__main__":
-    asyncio.run(runner())
-    
+    loop = asyncio.get_event_loop_policy().get_event_loop()
+    try:
+        loop.run_until_complete(runner())
+    except KeyboardInterrupt:
+        print("\nSistem dimatikan oleh pengguna.")
+    finally:
+        loop.close()
