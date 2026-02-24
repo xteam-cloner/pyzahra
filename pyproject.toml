@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zahra"
+version = "0.1.0"
+description = "zahra engine modular for multi-client userbot."
+dependencies = [
+    "kurigram",
+    "motor",
+    "py-tgcalls",
+    "python-dotenv",
+    "tgcrypto"
+]
