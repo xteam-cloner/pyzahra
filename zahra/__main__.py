@@ -1,8 +1,17 @@
 import asyncio
+import os
 from pyrogram import Client, idle
 from pytgcalls import PyTgCalls
 from .config import Config
 from .database import collection
+
+def get_plugins():
+    plugin_list = []
+    if os.path.exists("plugins"):
+        for file in os.listdir("plugins"):
+            if file.endswith(".py") and not file.startswith("__"):
+                plugin_list.append(file[:-3])
+    return plugin_list
 
 app = Client(
     "zahra", 
@@ -11,12 +20,6 @@ app = Client(
     bot_token=Config.BOT_TOKEN,
     plugins=dict(root="plugins")
 )
-
-async def send_log(text):
-    try:
-        await app.send_message(Config.LOG_ID, text)
-    except Exception as e:
-        print(f"Gagal kirim log: {e}")
 
 async def start_ubot(data):
     try:
@@ -34,32 +37,30 @@ async def start_ubot(data):
         await call.start()
         zahra_ub.call = call
         
-        await send_log(f"✅ **Userbot Aktif**\nID: `{data['user_id']}`")
+        print(f"OK: {data['user_id']}")
         return zahra_ub
     except Exception as e:
-        await send_log(f"❌ **Gagal Login**\nID: `{data['user_id']}`\nError: `{e}`")
+        print(f"ERR: {data['user_id']} | {e}")
         return None
 
 async def runner():
-    try:
-        await app.start()
-        async for acc in collection.find({}):
-            await start_ubot(acc)
+    plugins = get_plugins()
+    for p in plugins:
+        print(f"LOAD: {p}")
+    
+    await app.start()
+    async for acc in collection.find({}):
+        await start_ubot(acc)
         
-        await send_log("🚀 **Zahra Core Online**\nSemua sistem telah dimuat.")
-        print("🚀 ZAHRA CORE IS RUNNING")
-        await idle()
-    except Exception as e:
-        print(f"❌ Error saat menjalankan core: {e}")
-    finally:
-        # Menutup semua koneksi saat bot mati
-        await app.stop()
+    print(f"ONLINE | PLUGINS: {len(plugins)}")
+    await idle()
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop_policy().get_event_loop()
     try:
         loop.run_until_complete(runner())
     except KeyboardInterrupt:
-        print("\nSistem dimatikan oleh pengguna.")
+        pass
     finally:
         loop.close()
+    
